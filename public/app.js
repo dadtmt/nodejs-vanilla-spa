@@ -138,7 +138,7 @@ const route = pathname => {
 
 (() => {
 
-  ['/', '/about', '/users/new', '/users/:slug', '*'].forEach(
+  ['/', '/about', '/users/new', '/users/:slug', '/try', '*'].forEach(
     path => page(path, controllers[path])
   )
   page()
