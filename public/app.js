@@ -123,6 +123,10 @@ const controllers = {
     </div>`
   ),
 
+  '/try': () => render(
+    'try'
+  ),
+
   '*': () => render('<h1>Not Found</h1>')
 }
 
