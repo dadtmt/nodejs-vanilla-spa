@@ -4,6 +4,7 @@ const render = html => {
   mainDiv.innerHTML = html
 }
 
+// renvoit le html d'une card bootstrap pour un pirate
 const makeCard = item => `
   <div class="col-md-4">
     <div class="card mb-4 box-shadow">
@@ -24,6 +25,7 @@ const serializeForm = form => {
   return data
 }
 
+//routing coté client
 const controllers = {
 
   '/': () =>
@@ -127,21 +129,53 @@ const controllers = {
     'try'
   ),
 
+  '/list-wilders': () => {
+    console.log('list wilders')
+    fetch('/wilders')
+    .then(response => response.json())
+    .then(wilders => {
+      console.log(wilders)
+      let htmlList = '<ul>'
+      for (wilder of wilders) {
+        htmlList += `<li>${wilder.firstName}</li>`
+      }
+      htmlList += '</ul>'
+      render(`
+        <div class="container">
+          <div class="jumbotron">
+            <h1 class="display-3">Hello les wilders!</h1>
+            ${htmlList}
+          </div>
+        </div>
+        `)
+    })
+    render(
+      `<div class="container">
+        <div class="jumbotron">
+          <h1 class="display-3">Hello les wilders!</h1>
+        </div>
+      </div>`)
+  },
+
   '*': () => render('<h1>Not Found</h1>')
 }
 
-
-const route = pathname => {
-
-}
-
-
-(() => {
-
-  ['/', '/about', '/users/new', '/users/:slug', '/try', '*'].forEach(
+// gére l'execution du routing coté client
+const routing = () => {
+  const routes = [
+    '/',
+    '/about',
+    '/users/new',
+    '/users/:slug',
+    '/try',
+    '/list-wilders',
+    '*'
+  ]
+  routes.forEach(
     path => page(path, controllers[path])
   )
   page()
-  // route()
+}
 
-})()
+//appel cette fonction pour gérer les routes
+routing()

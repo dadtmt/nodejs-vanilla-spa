@@ -6,6 +6,7 @@ const app = express()
 const usersSeed = require('./public/pirates.json')
 let db
 
+// permet de servir les ressources statiques du dossier public
 app.use(express.static('public'))
 app.use(bodyParser.json())
 
@@ -41,17 +42,42 @@ const html = `
   </body>
 </html>`
 
+
+//routing cotè Serveur
+
+//routes de l'api REST qui répondent par du
+
+//CREATE
 app.post('/pirates', (req, res) => {
   return insertUser(req.body)
   .then(record => res.json(record))
 })
 
+//READ
 app.get('/pirates', (req, res) => {
   db.all('SELECT * from users')
   .then(records => res.json(records))
 })
 
+//READ
+app.get('/wilders', (req, res) => {
+  console.log("route wilders")
+  const wilders = [
+    {
+      firstName: 'Aurélie',
+      game: 'Monkey Island'
+    },
+    {
+      firstName: 'Max',
+      game: 'Halo'
+    }
+  ]
+  res.json(wilders)
+})
+
+// route par défaut qui renvoit le code html/css/js complet de l'application
 app.get('*', (req, res) => {
+  // to test log du path
   res.send(html)
   res.end()
 })
