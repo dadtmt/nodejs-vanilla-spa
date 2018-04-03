@@ -97,6 +97,48 @@ const controllers = {
     })
   },
 
+  '/wilders/new': () => {
+    //construit le formulaire
+    render(
+    `<div class="container">
+      <div id="alert-box" class="hidden">
+
+      </div>
+      <form id="add-wilder">
+        <div class="form-group">
+          <label for="inputFirstName">First name</label>
+          <input name="firstName" type="text" class="form-control" id="inputFirstName" placeholder="Enter first name">
+        </div>
+        <div class="form-group">
+          <label for="inputGame">Last name</label>
+          <input name="game" type="text" class="form-control" id="inputGame" placeholder="Enter last name">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>`
+  )
+    //js du formulaire
+    const form = document.getElementById('add-wilder')
+    form.addEventListener('submit', e => {
+      e.preventDefault()
+      const data = serializeForm(form)
+      fetch('/wilders', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(wilder => {
+        const alertBox = document.getElementById('alert-box')
+        alertBox.className = 'alert alert-success'
+        alertBox.innerHTML = `Successfully created wilder ${wilder.firstName} (${wilder.id})`
+      })
+    })
+  },
+
   '/users/:slug': ctx => {
     const { slug } = ctx.params
     fetch('/pirates')
@@ -169,6 +211,7 @@ const routing = () => {
     '/users/:slug',
     '/try',
     '/list-wilders',
+    '/wilders/new',
     '*'
   ]
   routes.forEach(

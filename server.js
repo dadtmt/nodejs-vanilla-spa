@@ -17,13 +17,42 @@ const insertUser = u => {
   .then(({ id }) => db.get('SELECT * from users WHERE id = ?', id))
 }
 
+const insertWilder = w => {
+  const { firstName, game } = w
+  return db.get('INSERT INTO wilders(firstName, game) VALUES(?, ?)', firstName, game)
+  .then(() => db.get('SELECT last_insert_rowid() as id'))
+  .then(({ id }) => db.get('SELECT * from wilders WHERE id = ?', id))
+}
+
+
+// code qui remplit la db exemple
 const dbPromise = Promise.resolve()
 .then(() => sqlite.open('./database.sqlite', { Promise }))
 .then(_db => {
   db = _db
-  return db.migrate({ force: 'last' })
+  return db.migrate({ force: 'all' })
 })
 .then(() => Promise.map(usersSeed, u => insertUser(u)))
+.then(() => {
+   // example data
+    const wilders = [
+      {
+        firstName: 'Aurélie',
+        game: 'Monkey Island'
+      },
+      {
+        firstName: 'Max',
+        game: 'Halo'
+      },
+      {
+        firstName: 'Thibaud',
+        game: 'Diablo 2'
+      }
+    ]
+    for (wilder of wilders) {
+      insertWilder(wilder)
+    }
+  })
 
 const html = `
 <!doctype html>
@@ -59,20 +88,19 @@ app.get('/pirates', (req, res) => {
   .then(records => res.json(records))
 })
 
+//CREATE
+app.post('/wilders', (req, res) => {
+  return insertWilder(req.body)
+  .then(record => res.json(record))
+})
+
 //READ
 app.get('/wilders', (req, res) => {
-  console.log("route wilders")
-  const wilders = [
-    {
-      firstName: 'Aurélie',
-      game: 'Monkey Island'
-    },
-    {
-      firstName: 'Max',
-      game: 'Halo'
-    }
-  ]
-  res.json(wilders)
+  db.all('SELECT * from wilders')
+  .then(records => {
+    console.log(records)
+    return res.json(records)
+  })
 })
 
 // route par défaut qui renvoit le code html/css/js complet de l'application
